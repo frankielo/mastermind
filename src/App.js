@@ -9,8 +9,6 @@ const App = () => {
   const [input3, setinput3] = useState("");
   const [input4, setinput4] = useState("");
   const [computerGuess, setComputerGuess] = useState([]);
-  const [correctCounter, setCorrectCounter] = useState(0);
-  const [placedCounter, setPlacedCounter] = useState(0);
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
@@ -26,17 +24,15 @@ const App = () => {
   const onCheckHandler = () => {
 
     const inputVals = [input1,input2,input3,input4];
-    const historyObj = {input1,input2,input3,input4,correctCounter,placedCounter}
+    const historyObj = {input1,input2,input3,input4,correctCounter:0,placedCounter:0}
     const computerGuessCopy = [...computerGuess]
     inputVals.forEach((element,index) => {
       if(computerGuessCopy.includes(element)){
-        setCorrectCounter(prevState => prevState + 1);
         historyObj.correctCounter++
         const i = computerGuessCopy.indexOf(element);
         i > -1 && computerGuessCopy.splice(i,1); 
       }
       if(computerGuess[index] === element){
-        setPlacedCounter(prevState => prevState + 1);
         historyObj.placedCounter++
       }
     });
@@ -44,8 +40,6 @@ const App = () => {
     setinput2("");
     setinput3("");
     setinput4("");
-    setCorrectCounter(0)
-    setPlacedCounter(0)
     setHistory([...history,{...historyObj}])
   }
 
@@ -77,22 +71,22 @@ const App = () => {
             <td>{element.placedCounter}</td>
           </tr>
         )}
-        {
+        { 
           history.length < 10 && !(history[history.length -1]?.placedCounter >= 4) &&
           <tr>
-            <td> <input type="number" value={input1} onChange={(e) => setinput1(e.target.value)} /> </td>
-            <td> <input type="number" value={input2} onChange={(e) => setinput2(e.target.value)}/> </td>
-            <td> <input type="number" value={input3} onChange={(e) => setinput3(e.target.value)}/> </td>
-            <td> <input type="number" value={input4} onChange={(e) => setinput4(e.target.value)}/> </td>
-            <td> <button onClick={onCheckHandler}>Check</button> </td>
-            <td>{correctCounter}</td>
-            <td>{placedCounter}</td>
+            <td> <input type="number" value={input1} onChange={(e) => (/^[0-7]$/.test(e.target.value) || e.target.value === "") && setinput1(e.target.value)} /> </td>
+            <td> <input type="number" value={input2} onChange={(e) => (/^[0-7]$/.test(e.target.value) || e.target.value === "") && setinput2(e.target.value)}/> </td>
+            <td> <input type="number" value={input3} onChange={(e) => (/^[0-7]$/.test(e.target.value) || e.target.value === "") && setinput3(e.target.value)}/> </td>
+            <td> <input type="number" value={input4} onChange={(e) => (/^[0-7]$/.test(e.target.value) || e.target.value === "") && setinput4(e.target.value)}/> </td>
+            <td> <button onClick={onCheckHandler} disabled={!input1 || !input2 || !input3 || !input4 } >Check</button> </td>
+            <td>-</td>
+            <td>-</td>
           </tr>
         }  
         </tbody>
       </table>
       {history[history.length -1]?.placedCounter >= 4 && <h5>You have won the game</h5>}
-      {history.length >= 10 && !(history[history.length -1]?.placedCounter >= 4) && <h5>You have lost the game</h5>}
+      {history.length >= 10 && !(history[history.length -1]?.placedCounter >= 4) && <h5>You have lost the game the correct answer is {computerGuess}</h5>}
     </div>
   )
 }
